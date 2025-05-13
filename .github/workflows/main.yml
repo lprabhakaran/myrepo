@@ -8,7 +8,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v2
     - uses: kubescape/github-action@main
       continue-on-error: true
       with:
@@ -22,6 +22,6 @@ jobs:
         # # Optional: Scan a specific path. Default will scan the whole repository
         files: "*.yaml"
     - name: Upload Kubescape scan results to Github Code Scanning
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: results.sarif

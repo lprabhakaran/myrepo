@@ -14,6 +14,7 @@ jobs:
       with:
         format: sarif
         outputFile: results
+        severityThreshold: medium,low,high,critical
         # # Optional: Specify the Kubescape Portal credentials 
         # account: ${{secrets.KUBESCAPE_ACCOUNT}}
         # accessKey: ${{secrets.KUBESCAPE_ACCESS_KEY}}

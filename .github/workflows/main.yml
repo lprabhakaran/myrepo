@@ -1,26 +1,30 @@
-name: Kubescape scanning for misconfigurations
+name: Kubescape scanning for image vulnerabilities
 on: [push, pull_request]
 jobs:
-  kubescape:
+  kubescape-scan-image:
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: kubescape/github-action@main
       continue-on-error: true
       with:
+        image: nginx
         format: sarif
-        outputFile: results
-        flag: v
-        # # Optional: Specify the Kubescape Portal credentials 
+        outputFile: results.sarif
+        # severityThreshold: "critical"
+        # # Username for a private registry with the image
+        # registryUsername: ${{secrets.REGISTRY_USERNAME}}
+        # # Password for a private registry with the image
+        # registryPassword: ${{secrets.REGISTRY_PASSWORD}}
+        # # Fail at or above the specified vulnerability severity threshold
+        # Kubescape Portal credentials
         # account: ${{secrets.KUBESCAPE_ACCOUNT}}
         # accessKey: ${{secrets.KUBESCAPE_ACCESS_KEY}}
         # server: ${{ vars.KUBESCAPE_SERVER }}
-        # # Optional: Scan a specific path. Default will scan the whole repository
-        files: "*.yaml"
     - name: Upload Kubescape scan results to Github Code Scanning
       uses: github/codeql-action/upload-sarif@v2
       with:

@@ -13,18 +13,26 @@ jobs:
       security-events: write
     steps:
     - uses: actions/checkout@v3
-    - uses: kubescape/github-action@3.0.1
-      continue-on-error: true
+    - uses: kubescape/github-action@main
       with:
         format: sarif
-        outputFile: results
-        # # Optional: Specify the Kubescape Portal credentials 
-        # account: ${{secrets.KUBESCAPE_ACCOUNT}}
-        # accessKey: ${{secrets.KUBESCAPE_ACCESS_KEY}}
-        # server: ${{ vars.KUBESCAPE_SERVER }}
-        # # Optional: Scan a specific path. Default will scan the whole repository
-        files: "*.yaml"
+        outputFile: results.sarif
+        files: "." 
+        verbose: true
+        severityThreshold: critical
+        
+    - name: List repository files
+      run: ls -laR
+
+    - name: Debug SARIF Contents
+      run: |
+        if [ -f results.sarif ]; then
+          cat results.sarif
+        else
+          echo "No SARIF file generated"
+        fi
+
     - name: Upload Kubescape scan results to Github Code Scanning
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       with:
-        sarif_file: results.sarif
+            sarif_file: results.sarif

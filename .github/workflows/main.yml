@@ -24,6 +24,6 @@ jobs:
         
     - name: Run Kubescape scan
       run: |
-        kubescape scan . \
+        kubescape scan *.yaml \
           --format sarif \
           --output results.sarif

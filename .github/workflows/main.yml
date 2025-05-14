@@ -13,26 +13,17 @@ jobs:
       security-events: write
     steps:
     - uses: actions/checkout@v3
-    - uses: kubescape/github-action@main
-      with:
-        format: sarif
-        outputFile: results.sarif
-        files: "." 
-        verbose: true
-        severityThreshold: critical
-        
-    - name: List repository files
-      run: ls -laR
-
-    - name: Debug SARIF Contents
+    - name: Install Kubescape
       run: |
-        if [ -f results.sarif ]; then
-          cat results.sarif
-        else
-          echo "No SARIF file generated"
-        fi
-
-    - name: Upload Kubescape scan results to Github Code Scanning
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-            sarif_file: results.sarif
+        KUBESCAPE_DIR="$HOME/kubescape-bin"
+        mkdir -p "$KUBESCAPE_DIR"
+        LATEST_VERSION=$(curl -s https://api.github.com/repos/kubescape/kubescape/releases/latest | jq -r .tag_name)
+        curl -sL "https://github.com/kubescape/kubescape/releases/download/${LATEST_VERSION}/kubescape-ubuntu-latest" -o "$KUBESCAPE_DIR/kubescape"
+        chmod +x "$KUBESCAPE_DIR/kubescape"
+        echo "$KUBESCAPE_DIR" >> $GITHUB_PATH
+        
+    - name: Run Kubescape scan
+      run: |
+        kubescape scan . \
+          --format sarif \
+          --output results.sarif
